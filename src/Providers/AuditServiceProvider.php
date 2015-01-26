@@ -20,10 +20,21 @@
 namespace DreamFactory\Library\Fabric\Auditing\Providers;
 
 use DreamFactory\Library\Fabric\Auditing\Services\AuditingService;
+use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\ServiceProvider;
 
 /**
- * Contains auditing methods for DFE
+ * Register the auditing service as a provider with Laravel.
+ *
+ * To use the "Audit" facade for this provider, you need to add the service provider to
+ * your the providers array in your app/config/app.php file:
+ *
+ *  'providers' => array(
+ *
+ *      ... Other Providers Above ...
+ *      'DreamFactory\Library\Fabric\Auditing\Providers\AuditServiceProvider',
+ *
+ *  ),
  */
 class AuditServiceProvider extends ServiceProvider
 {
@@ -38,11 +49,20 @@ class AuditServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        //  Register object into instance container
         $this->app->bindShared(
             'dfe.auditing',
             function ( $app )
             {
                 return new AuditingService();
+            }
+        );
+
+        //  Create an alias for use
+        $this->app->booting(
+            function ()
+            {
+                AliasLoader::getInstance()->alias( 'Audit', 'DreamFactory\\Library\\Fabric\\Auditing\\Facades\\Audit' );
             }
         );
     }
