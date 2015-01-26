@@ -4,3 +4,4 @@ phpunit.xml
 tests/log/
 tests/config/keys.config.php
 build/
+compooser.lock
