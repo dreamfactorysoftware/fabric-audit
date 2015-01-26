@@ -19,6 +19,7 @@
  */
 namespace DreamFactory\Library\Fabric\Auditing\Providers;
 
+use DreamFactory\Library\Fabric\Auditing\Services\AuditingService;
 use Illuminate\Support\ServiceProvider;
 
 /**
