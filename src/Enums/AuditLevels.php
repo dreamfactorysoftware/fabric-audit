@@ -1,19 +1,23 @@
 <?php
-namespace DreamFactory\Library\Fabric\Common\Gelf\Enums;
+namespace DreamFactory\Library\Fabric\Auditing\Enums;
 
 use DreamFactory\Library\Utility\Enums\FactoryEnum;
 
 /**
- * The "level" of a GELF message.
+ * The "level" of an audit message.
  *
  * Equal to the standard syslog levels
  */
-class Levels extends FactoryEnum
+class AuditLevels extends FactoryEnum
 {
     //*************************************************************************
     //* Constants
     //*************************************************************************
 
+    /**
+     * @var int
+     */
+    const __default = self::INFO;
     /**
      * @var int
      */
@@ -46,9 +50,4 @@ class Levels extends FactoryEnum
      * @var int
      */
     const DEBUG = 7;
-
-    /**
-     * @var int
-     */
-    const __default = self::ALERT;
 }

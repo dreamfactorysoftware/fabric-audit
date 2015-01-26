@@ -1,15 +1,15 @@
 <?php
-namespace DreamFactory\Library\Fabric\Common\Gelf;
+namespace DreamFactory\Library\Fabric\Auditing\Components;
 
-use DreamFactory\Library\Fabric\Common\Gelf\Enums\Levels;
+use DreamFactory\Library\Fabric\Auditing\Enums\AuditLevels;
 
 /**
- * A standard GELF message
+ * A GELF v1.1 message
  * v1.1 (11/2013)
  *
  * @link http://www.graylog2.org/resources/gelf/specification
  */
-class Message
+class GelfMessage
 {
     //******************************************************************************
     //* Constants
@@ -47,7 +47,7 @@ class Message
     /**
      * @type int
      */
-    protected $_level = Levels::ALERT;
+    protected $_level = AuditLevels::INFO;
     /**
      * @type array Additional fields added to the message
      */
@@ -83,7 +83,7 @@ class Message
 
         $this->_host = gethostname();
         $this->_timestamp = microtime( true );
-        $this->_level = Levels::ALERT;
+        $this->_level = AuditLevels::INFO;
         $this->_shortMessage = $this->_fullMessage = null;
         $this->_additional = array();
 
@@ -112,7 +112,7 @@ class Message
     {
         $_message = array(
             'version'       => $this->_version,
-            'host'         => $this->_host,
+            'host'          => $this->_host,
             'short_message' => $this->_shortMessage,
             'full_message'  => $this->_fullMessage,
             'timestamp'     => $this->_timestamp,
@@ -204,7 +204,7 @@ class Message
     /**
      * @param string $fullMessage
      *
-     * @return Message
+     * @return $this
      */
     public function setFullMessage( $fullMessage )
     {
@@ -219,6 +219,18 @@ class Message
     public function getShortMessage()
     {
         return $this->_shortMessage;
+    }
+
+    /**
+     * @param string $shortMessage
+     *
+     * @return GelfMessage
+     */
+    public function setShortMessage( $shortMessage )
+    {
+        $this->_shortMessage = $shortMessage;
+
+        return $this;
     }
 
     /**
@@ -251,9 +263,9 @@ class Message
      * @throws \InvalidArgumentException
      * @return $this
      */
-    public function setLevel( $level = Levels::ALERT )
+    public function setLevel( $level = AuditLevels::INFO )
     {
-        if ( !Levels::contains( $level ) )
+        if ( !AuditLevels::contains( $level ) )
         {
             throw new \InvalidArgumentException( 'The level "' . $level . '" is not valid.' );
         }

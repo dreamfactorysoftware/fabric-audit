@@ -1,24 +1,25 @@
 <?php
-namespace DreamFactory\Library\Fabric\Common\Gelf;
+namespace DreamFactory\Library\Fabric\Auditing\Providers;
+namespace DreamFactory\Library\Fabric\Auditing\Utility;
 
-use DreamFactory\Library\Fabric\Common\Components\FabricObject;
-use DreamFactory\Library\Fabric\Common\Gelf\Enums\Levels;
-use DreamFactory\Library\Fabric\Common\Utility\Json;
+use DreamFactory\Library\Fabric\Auditing\Components\GelfMessage;
+use DreamFactory\Library\Fabric\Auditing\Enums\AuditLevels;
+use DreamFactory\Library\Utility\JsonFile;
 use Psr\Log\LoggerInterface;
 
 /**
- * A GELF logger
+ * Provides an interface to the elk cluster
  */
-class Logger extends FabricObject implements LoggerInterface
+class GelfLogger implements LoggerInterface
 {
     //**************************************************************************
     //* Constants
     //**************************************************************************
 
     /**
-     * @var string Hostname of graylog2 server
+     * @var string ELK cluster
      */
-    const DEFAULT_HOST = 'graylog.fabric.dreamfactory.com';
+    const DEFAULT_HOST = 'lps-east-1.fabric.dreamfactory.com';
     /**
      * @const integer Port that graylog2 server listens on
      */
@@ -32,9 +33,41 @@ class Logger extends FabricObject implements LoggerInterface
      */
     const MAX_CHUNKS_ALLOWED = 128;
 
-    //**********************************************************************
-    //* Public Methods
-    //**********************************************************************
+    //******************************************************************************
+    //* Members
+    //******************************************************************************
+
+    /**
+     * @type string The default log host
+     */
+    static protected $_host = self::DEFAULT_HOST;
+    /**
+     * @type int
+     */
+    static protected $_port = self::DEFAULT_PORT;
+
+    //******************************************************************************
+    //* Methods
+    //******************************************************************************
+
+    /**
+     * Logs with an arbitrary level.
+     *
+     * @param mixed  $level
+     * @param string $message
+     * @param array  $context
+     *
+     * @return bool
+     */
+    public function log( $level, $message, array $context = array() )
+    {
+        $_message = new GelfMessage( $context );
+
+        $_message->setLevel( $level );
+        $_message->setFullMessage( $message );
+
+        return $this->send( $_message );
+    }
 
     /**
      * System is unusable.
@@ -46,7 +79,7 @@ class Logger extends FabricObject implements LoggerInterface
      */
     public function emergency( $message, array $context = array() )
     {
-        $this->log( Levels::EMERGENCY, $message, $context );
+        $this->log( AuditLevels::EMERGENCY, $message, $context );
     }
 
     /**
@@ -62,7 +95,7 @@ class Logger extends FabricObject implements LoggerInterface
      */
     public function alert( $message, array $context = array() )
     {
-        $this->log( Levels::ALERT, $message, $context );
+        $this->log( AuditLevels::ALERT, $message, $context );
     }
 
     /**
@@ -77,7 +110,7 @@ class Logger extends FabricObject implements LoggerInterface
      */
     public function critical( $message, array $context = array() )
     {
-        $this->log( Levels::CRITICAL, $message, $context );
+        $this->log( AuditLevels::CRITICAL, $message, $context );
     }
 
     /**
@@ -91,7 +124,7 @@ class Logger extends FabricObject implements LoggerInterface
      */
     public function error( $message, array $context = array() )
     {
-        $this->log( Levels::ERROR, $message, $context );
+        $this->log( AuditLevels::ERROR, $message, $context );
     }
 
     /**
@@ -107,7 +140,7 @@ class Logger extends FabricObject implements LoggerInterface
      */
     public function warning( $message, array $context = array() )
     {
-        $this->log( Levels::WARNING, $message, $context );
+        $this->log( AuditLevels::WARNING, $message, $context );
     }
 
     /**
@@ -120,7 +153,7 @@ class Logger extends FabricObject implements LoggerInterface
      */
     public function notice( $message, array $context = array() )
     {
-        $this->log( Levels::NOTICE, $message, $context );
+        $this->log( AuditLevels::NOTICE, $message, $context );
     }
 
     /**
@@ -135,7 +168,7 @@ class Logger extends FabricObject implements LoggerInterface
      */
     public function info( $message, array $context = array() )
     {
-        $this->log( Levels::INFO, $message, $context );
+        $this->log( AuditLevels::INFO, $message, $context );
     }
 
     /**
@@ -148,43 +181,22 @@ class Logger extends FabricObject implements LoggerInterface
      */
     public function debug( $message, array $context = array() )
     {
-        $this->log( Levels::DEBUG, $message, $context );
+        $this->log( AuditLevels::DEBUG, $message, $context );
     }
 
     /**
-     * Logs with an arbitrary level.
-     *
-     * @param mixed  $level
-     * @param string $message
-     * @param array  $context
+     * @param GelfMessage $message The message to send
      *
      * @return bool
      */
-    public function log( $level, $message, array $context = array() )
-    {
-        $_message = new Message( array('context' => $context) );
-        $_message->setFullMessage( $_message );
-
-        return $this->sendMessage( $_message );
-    }
-
-    //**********************************************************************
-    //* Protected Methods
-    //**********************************************************************
-
-    /**
-     * @param Message $message The message to send
-     *
-     * @return bool
-     */
-    public function sendMessage( Message $message )
+    public function send( GelfMessage $message )
     {
         if ( false === ( $_chunks = $this->_prepareMessage( $message ) ) )
         {
             return false;
         }
 
-        $_url = 'udp://' . static::DEFAULT_HOST . ':' . static::DEFAULT_PORT;
+        $_url = 'udp://' . static::$_host . ':' . static::$_port;
         $_sock = stream_socket_client( $_url );
 
         foreach ( $_chunks as $_chunk )
@@ -201,13 +213,13 @@ class Logger extends FabricObject implements LoggerInterface
     /**
      * Static method for preparing a GELF message to be sent
      *
-     * @param Message $message
+     * @param GelfMessage $message
      *
      * @return array
      */
-    protected function _prepareMessage( Message $message )
+    protected function _prepareMessage( GelfMessage $message )
     {
-        $_json = Json::encode( $message->toArray() );
+        $_json = JsonFile::encode( $message->toArray() );
 
         if ( false === ( $_gzJson = gzcompress( $_json ) ) )
         {
@@ -251,5 +263,37 @@ class Logger extends FabricObject implements LoggerInterface
         }
 
         return $_prepared;
+    }
+
+    /**
+     * @return string
+     */
+    public static function getHost()
+    {
+        return static::$_host;
+    }
+
+    /**
+     * @param string $host
+     */
+    public static function setHost( $host )
+    {
+        static::$_host = $host;
+    }
+
+    /**
+     * @return int
+     */
+    public static function getPort()
+    {
+        return static::$_port;
+    }
+
+    /**
+     * @param int $port
+     */
+    public static function setPort( $port )
+    {
+        static::$_port = $port;
     }
 }

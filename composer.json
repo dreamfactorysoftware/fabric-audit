@@ -6,8 +6,8 @@
     "license":           ["proprietary"],
     "authors":           [{ "name": "Jerry Ablan", "email": "jerryablan@dreamfactory.com" }],
     "minimum-stability": "dev",
-    "require":           { "dreamfactory/php-utils": "~1.0" },
-    "require-dev":       { "phpunit/phpunit": "@stable" },
+    "require":           { "dreamfactory/php-utils": "~1.0", "psr/log": "~1.0" },
+    "require-dev":       { "laravel/laravel": "4.2.*", "phpunit/phpunit": "@stable" },
     "autoload":          { "psr-4": { "DreamFactory\\Library\\Fabric\\Auditing\\": "src/" } },
     "extra":             { "branch-alias": { "dev-develop": "1.0.x-dev" } }
 }
