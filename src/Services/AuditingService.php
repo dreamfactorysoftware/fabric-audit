@@ -65,14 +65,15 @@ class AuditingService implements LoggerAwareInterface
     /**
      * Logs API requests to logging system
      *
-     * @param string  $instanceId The id of the sending instance
-     * @param Request $request    The request
-     * @param int     $level      The level, defaults to INFO
-     * @param string  $facility   The facility, used for sorting
+     * @param string  $instanceId  The id of the sending instance
+     * @param Request $request     The request
+     * @param array   $sessionData Any session data to log
+     * @param int     $level       The level, defaults to INFO
+     * @param string  $facility    The facility, used for sorting
      *
      * @return bool
      */
-    public static function logRequest( $instanceId, Request $request, $level = AuditLevels::INFO, $facility = self::DEFAULT_FACILITY )
+    public static function logRequest( $instanceId, Request $request, $sessionData = array(), $level = AuditLevels::INFO, $facility = self::DEFAULT_FACILITY )
     {
         try
         {
@@ -100,29 +101,10 @@ class AuditingService implements LoggerAwareInterface
                 'path_info'         => $request->getPathInfo(),
                 'path_translated'   => $request->server->get( 'PATH_TRANSLATED' ),
                 'query'             => $request->query->all(),
+                'user'              => array(
+                    'session' => $sessionData,
+                ),
             );
-
-            $_sessionInfo = null;
-
-            foreach ( $_SESSION as $_key => $_value )
-            {
-                if ( 'cached' == substr( $_key, -6 ) )
-                {
-                    $_sessionInfo = $_value;
-                    break;
-                }
-            }
-
-            if ( $_sessionInfo )
-            {
-                $_data['user'] = array(
-                    'id'         => IfSet::get( $_sessionInfo, 'id', 'unknown' ),
-                    'email'      => IfSet::get( $_sessionInfo, 'email', 'unknown' ),
-                    'first_name' => IfSet::get( $_sessionInfo, 'last_name', 'unknown' ),
-                    'last_name'  => IfSet::get( $_sessionInfo, 'first_name', 'unknown' ),
-                    'admin'      => IfSet::get( $_sessionInfo, 'is_sys_admin', false ),
-                );
-            }
 
             $_message = new GelfMessage( $_data );
             $_message->setLevel( $level );
