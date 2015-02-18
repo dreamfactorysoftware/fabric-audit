@@ -84,8 +84,6 @@ class AuditingService implements LoggerAwareInterface
                 'source_ip'         => $request->getClientIps(),
                 'content_type'      => $request->getContentType(),
                 'content_length'    => (int)$request->headers->get( 'Content-Length' ) ?: 0,
-                'instance_id'       => $instanceId,
-                'session'           => $_SESSION,
                 'token'             => $request->headers->get( 'x-dreamfactory-session-token' ),
                 'facility'          => $facility,
                 'app_name'          => IfSet::get(
@@ -97,11 +95,28 @@ class AuditingService implements LoggerAwareInterface
                     )
                 ),
                 'host'              => $_host,
+                'server_id'         => $instanceId,
                 'method'            => $request->getMethod(),
                 'path_info'         => $request->getPathInfo(),
                 'path_translated'   => $request->server->get( 'PATH_TRANSLATED' ),
                 'query'             => $request->query->all(),
             );
+
+            foreach ( $_SESSION as $_key => $_value )
+            {
+                if ( 'cached.email' === substr( $_key, -12 ) )
+                {
+                    $_data['user_email'] = $_value;
+                }
+                else if ( 'cached.id' === substr( $_key, -9 ) )
+                {
+                    $_data['user_id'] = $_value;
+                }
+                else if ( 'cached.is_sys_admin' === substr( $_key, -20 ) )
+                {
+                    $_data['admin_access'] = $_value;
+                }
+            }
 
             $_message = new GelfMessage( $_data );
             $_message->setLevel( $level );
