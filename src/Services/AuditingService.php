@@ -85,6 +85,7 @@ class AuditingService implements LoggerAwareInterface
                 'content_type'      => $request->getContentType(),
                 'content_length'    => (int)$request->headers->get( 'Content-Length' ) ?: 0,
                 'instance_id'       => $instanceId,
+                'session'           => $_SESSION,
                 'token'             => $request->headers->get( 'x-dreamfactory-session-token' ),
                 'facility'          => $facility,
                 'app_name'          => IfSet::get(
