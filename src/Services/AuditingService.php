@@ -104,15 +104,15 @@ class AuditingService implements LoggerAwareInterface
 
             foreach ( $_SESSION as $_key => $_value )
             {
-                if ( 'cached.email' === substr( $_key, -12 ) )
+                if ( 'cached.email' == substr( $_key, -12 ) )
                 {
                     $_data['user_email'] = $_value;
                 }
-                else if ( 'cached.id' === substr( $_key, -9 ) )
+                else if ( 'cached.id' == substr( $_key, -9 ) )
                 {
                     $_data['user_id'] = $_value;
                 }
-                else if ( 'cached.is_sys_admin' === substr( $_key, -20 ) )
+                else if ( 'cached.is_sys_admin' == substr( $_key, -19 ) )
                 {
                     $_data['admin_access'] = $_value;
                 }
