@@ -102,20 +102,26 @@ class AuditingService implements LoggerAwareInterface
                 'query'             => $request->query->all(),
             );
 
+            $_sessionInfo = null;
+
             foreach ( $_SESSION as $_key => $_value )
             {
-                if ( 'cached.email' == substr( $_key, -12 ) )
+                if ( 'cached' == substr( $_key, -6 ) )
                 {
-                    $_data['user_email'] = $_value;
+                    $_sessionInfo = $_value;
+                    break;
                 }
-                else if ( 'cached.id' == substr( $_key, -9 ) )
-                {
-                    $_data['user_id'] = $_value;
-                }
-                else if ( 'cached.is_sys_admin' == substr( $_key, -19 ) )
-                {
-                    $_data['admin_access'] = $_value;
-                }
+            }
+
+            if ( $_sessionInfo )
+            {
+                $_data['user'] = array(
+                    'id'         => IfSet::get( $_sessionInfo, 'id', 'unknown' ),
+                    'email'      => IfSet::get( $_sessionInfo, 'email', 'unknown' ),
+                    'first_name' => IfSet::get( $_sessionInfo, 'last_name', 'unknown' ),
+                    'last_name'  => IfSet::get( $_sessionInfo, 'first_name', 'unknown' ),
+                    'admin'      => IfSet::get( $_sessionInfo, 'is_sys_admin', false ),
+                );
             }
 
             $_message = new GelfMessage( $_data );
