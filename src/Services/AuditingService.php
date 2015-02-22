@@ -73,13 +73,20 @@ class AuditingService implements LoggerAwareInterface
      *
      * @return bool
      */
-    public static function logRequest( $instanceId, Request $request, $sessionData = array(), $level = AuditLevels::INFO, $facility = self::DEFAULT_FACILITY )
+    public static function logRequest( $instanceId, Request $request, $sessionData = [], $level = AuditLevels::INFO, $facility = self::DEFAULT_FACILITY )
     {
         try
         {
             $_host = $request->getHost();
 
-            $_data = array(
+            $_cluster = [
+                'id'            => $request->server->get( 'DFE_CLUSTER_ID' ),
+                'app_server_id' => $request->server->get( 'DFE_APP_SERVER_ID' ),
+                'db_server_id'  => $request->server->get( 'DFE_DB_SERVER_ID' ),
+                'web_server_id' => $request->server->get( 'DFE_WEB_SERVER_ID' ),
+            ];
+
+            $_data = [
                 'request_timestamp' => (double)$request->server->get( 'REQUEST_TIME_FLOAT' ),
                 'user_agent'        => $request->headers->get( 'user-agent' ),
                 'source_ip'         => $request->getClientIps(),
@@ -95,16 +102,17 @@ class AuditingService implements LoggerAwareInterface
                         $request->headers->get( 'x-application-name' )
                     )
                 ),
+                'cluster'           => $_cluster,
                 'host'              => $_host,
                 'server_id'         => $instanceId,
                 'method'            => $request->getMethod(),
                 'path_info'         => $request->getPathInfo(),
                 'path_translated'   => $request->server->get( 'PATH_TRANSLATED' ),
                 'query'             => $request->query->all(),
-                'user'              => array(
+                'user'              => [
                     'session' => $sessionData,
-                ),
-            );
+                ],
+            ];
 
             $_message = new GelfMessage( $_data );
             $_message->setLevel( $level );
