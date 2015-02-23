@@ -2,6 +2,7 @@
 namespace DreamFactory\Library\Fabric\Auditing\Facades;
 
 use DreamFactory\Library\Fabric\Auditing\Enums\AuditLevels;
+use DreamFactory\Library\Fabric\Auditing\Providers\AuditServiceProvider;
 use DreamFactory\Library\Fabric\Auditing\Services\AuditingService;
 use DreamFactory\Library\Fabric\Auditing\Utility\GelfLogger;
 use Illuminate\Support\Facades\Facade;
@@ -29,7 +30,7 @@ class Audit extends Facade
      */
     protected static function getFacadeAccessor()
     {
-        return 'dfe.auditing';
+        return AuditServiceProvider::ALIAS_NAME;
     }
 
 }

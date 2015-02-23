@@ -19,9 +19,8 @@
  */
 namespace DreamFactory\Library\Fabric\Auditing\Providers;
 
+use DreamFactory\Enterprise\Common\Providers\BaseServiceProvider;
 use DreamFactory\Library\Fabric\Auditing\Services\AuditingService;
-use Illuminate\Foundation\AliasLoader;
-use Illuminate\Support\ServiceProvider;
 
 /**
  * Register the auditing service as a provider with Laravel.
@@ -38,6 +37,19 @@ use Illuminate\Support\ServiceProvider;
  */
 class AuditServiceProvider extends BaseServiceProvider
 {
+    //******************************************************************************
+    //* Constants
+    //******************************************************************************
+
+    /**
+     * @type string The name of the alias to create
+     */
+    const ALIAS_NAME = 'Audit';
+    /**
+     * @type string The name of the service in the IoC
+     */
+    const IOC_NAME = 'dfe.audit';
+
     //********************************************************************************
     //* Public Methods
     //********************************************************************************
@@ -49,21 +61,16 @@ class AuditServiceProvider extends BaseServiceProvider
      */
     public function register()
     {
+        $this->_serviceClass = 'DreamFactory\\Library\\Fabric\\Auditing\\AuditingService';
+
         //  Register object into instance container
-        $this->app->bindShared(
-            'dfe.auditing',
+        $this->bind(
+            static::IOC_NAME,
             function ( $app )
             {
-                return new AuditingService();
-            }
-        );
-
-        //  Create an alias for use
-        $this->app->booting(
-            function ()
-            {
-                AliasLoader::getInstance()->alias( 'Audit', 'DreamFactory\\Library\\Fabric\\Auditing\\Facades\\Audit' );
-            }
+                return new AuditingService( $app );
+            },
+            true
         );
     }
 
