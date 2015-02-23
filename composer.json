@@ -1,13 +1,56 @@
 {
-    "name":              "dreamfactory/fabric-audit",
-    "description":       "DreamFactory Enterprise(tm) Auditing Library",
-    "homepage":          "https://www.dreamfactory.com/",
-    "keywords":          ["dreamfactory", "fabric", "utility", "queue"],
-    "license":           ["proprietary"],
-    "authors":           [{ "name": "Jerry Ablan", "email": "jerryablan@dreamfactory.com" }],
-    "minimum-stability": "dev",
-    "require":           { "dreamfactory/php-utils": "~1.0", "psr/log": "~1.0" },
-    "require-dev":       { "laravel/laravel": "4.2.*", "phpunit/phpunit": "@stable" },
-    "autoload":          { "psr-4": { "DreamFactory\\Library\\Fabric\\Auditing\\": "src/" } },
-    "extra":             { "branch-alias": { "dev-develop": "1.0.x-dev" } }
+	"name":              "dreamfactory/fabric-audit",
+	"description":       "DreamFactory Enterprise(tm) Auditing Library",
+	"homepage":          "https://www.dreamfactory.com/",
+	"keywords":          [
+		"dreamfactory",
+		"fabric",
+		"utility",
+		"queue"
+	],
+	"license":           ["proprietary"],
+	"authors":           [
+		{
+			"name":  "Jerry Ablan",
+			"email": "jerryablan@dreamfactory.com"
+		}
+	],
+	"repositories":      [
+		{
+			"type": "vcs",
+			"url":  "git@github.com:dreamfactorysoftware/dfe-common.git"
+		},
+		{
+			"type": "vcs",
+			"url":  "git@github.com:dreamfactorysoftware/dfe-services.git"
+		},
+		{
+			"type": "vcs",
+			"url":  "git@github.com:dreamfactorysoftware/fabric-common.git"
+		},
+		{
+			"type": "vcs",
+			"url":  "git@github.com:dreamfactorysoftware/fabric-db.git"
+		},
+		{
+			"type": "vcs",
+			"url":  "git@github.com:dreamfactorysoftware/fabric-queue-models.git"
+		},
+		{
+			"type": "vcs",
+			"url":  "git@github.com:dreamfactorysoftware/fabric-couchdb.git"
+		}
+	],
+	"minimum-stability": "dev",
+	"require":           {
+		"dreamfactory/php-utils":  "~1.0",
+		"dreamfactory/dfe-common": "dev-develop as dev-master",
+		"psr/log":                 "~1.0"
+	},
+	"require-dev":       {
+		"laravel/framework": "5.0.*",
+		"phpunit/phpunit":   "@stable"
+	},
+	"autoload":          {"psr-4": {"DreamFactory\\Library\\Fabric\\Auditing\\": "src/"}},
+	"extra":             {"branch-alias": {"dev-develop": "1.0.x-dev"}}
 }

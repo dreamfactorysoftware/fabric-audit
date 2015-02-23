@@ -36,7 +36,7 @@ use Illuminate\Support\ServiceProvider;
  *
  *  ),
  */
-class AuditServiceProvider extends ServiceProvider
+class AuditServiceProvider extends BaseServiceProvider
 {
     //********************************************************************************
     //* Public Methods
