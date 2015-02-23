@@ -12,7 +12,8 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * Audit
  *
- * @method static void function setHost( $host = GelfLogger::DEFAULT_HOST )
+ * @method static void setHost( $host = GelfLogger::DEFAULT_HOST )
+ * @method static bool log( $data = [], $level = AuditLevels::INFO, $facility = AuditingService::DEFAULT_FACILITY, $request = null )
  * @method static bool logRequest( string $instanceId, Request $request, $level = AuditLevels::INFO, $facility = AuditingService::DEFAULT_FACILITY )
  * @method static GelfLogger getLogger()
  * @method AuditingService setLogger( LoggerInterface $logger )

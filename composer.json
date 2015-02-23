@@ -44,10 +44,10 @@
 	"minimum-stability": "dev",
 	"require":           {
 		"dreamfactory/php-utils":  "~1.0",
-		"dreamfactory/dfe-common": "dev-develop as dev-master",
-		"psr/log":                 "~1.0"
+		"dreamfactory/dfe-common": "dev-develop as dev-master"
 	},
 	"require-dev":       {
+		"psr/log":           "~1.0",
 		"laravel/framework": "5.0.*",
 		"phpunit/phpunit":   "@stable"
 	},
