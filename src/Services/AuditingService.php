@@ -77,7 +77,18 @@ class AuditingService implements LoggerAwareInterface
     {
         try
         {
-            static::log( ['instance_id' => $instanceId, 'user' => $sessionData], $level, $facility, $request );
+            static::log(
+                [
+                    'dfe'  =>
+                        [
+                            'instance_id' => $instanceId
+                        ],
+                    'user' => $sessionData
+                ],
+                $level,
+                $facility,
+                $request
+            );
         }
         catch ( \Exception $_ex )
         {
@@ -145,11 +156,13 @@ class AuditingService implements LoggerAwareInterface
                     $_request->headers->get( 'x-application-name' )
                 )
             ),
-            'cluster'           => [
-                'id'            => $_request->server->get( 'DFE_CLUSTER_ID' ),
-                'app_server_id' => $_request->server->get( 'DFE_APP_SERVER_ID' ),
-                'db_server_id'  => $_request->server->get( 'DFE_DB_SERVER_ID' ),
-                'web_server_id' => $_request->server->get( 'DFE_WEB_SERVER_ID' ),
+            'dfe'               => [
+                'instance_id'       => null,
+                'instance_owner_id' => null,
+                'cluster_id'        => $_request->server->get( 'DFE_CLUSTER_ID' ),
+                'app_server_id'     => $_request->server->get( 'DFE_APP_SERVER_ID' ),
+                'db_server_id'      => $_request->server->get( 'DFE_DB_SERVER_ID' ),
+                'web_server_id'     => $_request->server->get( 'DFE_WEB_SERVER_ID' ),
             ],
             'host'              => $_request->getHost(),
             'method'            => $_request->getMethod(),
