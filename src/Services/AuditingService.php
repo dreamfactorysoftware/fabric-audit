@@ -77,46 +77,39 @@ class AuditingService implements LoggerAwareInterface
     {
         try
         {
-            $_host = $request->getHost();
+            static::log( ['instance_id' => $instanceId, 'user' => $sessionData], $level, $facility, $request );
+        }
+        catch ( \Exception $_ex )
+        {
+            //  Completely ignore any issues
+        }
+    }
 
-            $_cluster = [
-                'id'            => $request->server->get( 'DFE_CLUSTER_ID' ),
-                'app_server_id' => $request->server->get( 'DFE_APP_SERVER_ID' ),
-                'db_server_id'  => $request->server->get( 'DFE_DB_SERVER_ID' ),
-                'web_server_id' => $request->server->get( 'DFE_WEB_SERVER_ID' ),
-            ];
+    /**
+     * Logs API requests to logging system
+     *
+     * @param array   $data     The data to log
+     * @param int     $level    The level, defaults to INFO
+     * @param string  $facility The facility, used for sorting
+     * @param Request $request  The request, if available
+     *
+     * @return bool
+     */
+    public static function log( $data = [], $level = AuditLevels::INFO, $facility = self::DEFAULT_FACILITY, $request = null )
+    {
+        try
+        {
+            $_request = $request ?: ( app( 'request' ) ?: Request::createFromGlobals() );
 
-            $_data = [
-                'request_timestamp' => (double)$request->server->get( 'REQUEST_TIME_FLOAT' ),
-                'user_agent'        => $request->headers->get( 'user-agent' ),
-                'source_ip'         => $request->getClientIps(),
-                'content_type'      => $request->getContentType(),
-                'content_length'    => (int)$request->headers->get( 'Content-Length' ) ?: 0,
-                'token'             => $request->headers->get( 'x-dreamfactory-session-token' ),
-                'facility'          => $facility,
-                'app_name'          => IfSet::get(
-                    $_GET,
-                    'app_name',
-                    $request->headers->get(
-                        'x-dreamfactory-application-name',
-                        $request->headers->get( 'x-application-name' )
-                    )
-                ),
-                'cluster'           => $_cluster,
-                'host'              => $_host,
-                'server_id'         => $instanceId,
-                'method'            => $request->getMethod(),
-                'path_info'         => $request->getPathInfo(),
-                'path_translated'   => $request->server->get( 'PATH_TRANSLATED' ),
-                'query'             => $request->query->all(),
-                'user'              => [
-                    'session' => $sessionData,
-                ],
-            ];
+            $_data = array_merge(
+                static::_buildBasicEntry( $data, $_request ),
+                $data,
+                ['facility' => $facility]
+            );
 
             $_message = new GelfMessage( $_data );
             $_message->setLevel( $level );
-            $_message->setShortMessage( $request->getMethod() . ' ' . $request->getRequestUri() );
+            $_message->setShortMessage( $_request->getMethod() . ' ' . $_request->getRequestUri() );
             $_message->setFullMessage( 'DFE Audit | ' . implode( ', ', $_data['source_ip'] ) . ' | ' . $_data['request_timestamp'] );
 
             static::getLogger()->send( $_message );
@@ -125,6 +118,45 @@ class AuditingService implements LoggerAwareInterface
         {
             //  Completely ignore any issues
         }
+    }
+
+    /**
+     * @param array   $data
+     * @param Request $request
+     *
+     * @return array
+     */
+    protected static function _buildBasicEntry( $data = [], $request = null )
+    {
+        $_request = $request ?: Request::createFromGlobals();
+
+        return [
+            'request_timestamp' => (double)$_request->server->get( 'REQUEST_TIME_FLOAT' ),
+            'user_agent'        => $_request->headers->get( 'user-agent' ),
+            'source_ip'         => $_request->getClientIps(),
+            'content_type'      => $_request->getContentType(),
+            'content_length'    => (int)$_request->headers->get( 'Content-Length' ) ?: 0,
+            'token'             => $_request->headers->get( 'x-dreamfactory-session-token' ),
+            'app_name'          => IfSet::get(
+                $_GET,
+                'app_name',
+                $_request->headers->get(
+                    'x-dreamfactory-application-name',
+                    $_request->headers->get( 'x-application-name' )
+                )
+            ),
+            'cluster'           => [
+                'id'            => $_request->server->get( 'DFE_CLUSTER_ID' ),
+                'app_server_id' => $_request->server->get( 'DFE_APP_SERVER_ID' ),
+                'db_server_id'  => $_request->server->get( 'DFE_DB_SERVER_ID' ),
+                'web_server_id' => $_request->server->get( 'DFE_WEB_SERVER_ID' ),
+            ],
+            'host'              => $_request->getHost(),
+            'method'            => $_request->getMethod(),
+            'path_info'         => $_request->getPathInfo(),
+            'path_translated'   => $_request->server->get( 'PATH_TRANSLATED' ),
+            'query'             => $_request->query->all(),
+        ];
     }
 
     /**
