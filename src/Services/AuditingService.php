@@ -77,16 +77,21 @@ class AuditingService implements LoggerAwareInterface
     {
         try
         {
+            //  Add in stuff for API request logging
             static::log(
                 [
-                    'dfe'  =>
-                        [
-                            'instance_id' => $instanceId
-                        ],
-                    'user' => $sessionData
+                    'facility' => $facility,
+                    'dfe'      => [
+                        'instance_id'       => $instanceId,
+                        'instance_owner_id' => null,
+                        'cluster_id'        => $request->server->get( 'DFE_CLUSTER_ID' ),
+                        'app_server_id'     => $request->server->get( 'DFE_APP_SERVER_ID' ),
+                        'db_server_id'      => $request->server->get( 'DFE_DB_SERVER_ID' ),
+                        'web_server_id'     => $request->server->get( 'DFE_WEB_SERVER_ID' ),
+                    ],
+                    'user'     => $sessionData
                 ],
                 $level,
-                $facility,
                 $request
             );
         }
@@ -99,24 +104,18 @@ class AuditingService implements LoggerAwareInterface
     /**
      * Logs API requests to logging system
      *
-     * @param array   $data     The data to log
-     * @param int     $level    The level, defaults to INFO
-     * @param string  $facility The facility, used for sorting
-     * @param Request $request  The request, if available
+     * @param array   $data    The data to log
+     * @param int     $level   The level, defaults to INFO
+     * @param Request $request The request, if available
      *
      * @return bool
      */
-    public static function log( $data = [], $level = AuditLevels::INFO, $facility = self::DEFAULT_FACILITY, $request = null )
+    public static function log( $data = [], $level = AuditLevels::INFO, $request = null )
     {
         try
         {
             $_request = $request ?: ( app( 'request' ) ?: Request::createFromGlobals() );
-
-            $_data = array_merge(
-                static::_buildBasicEntry( $data, $_request ),
-                $data,
-                ['facility' => $facility]
-            );
+            $_data = array_merge( static::_buildBasicEntry( $data, $_request ), $data );
 
             $_message = new GelfMessage( $_data );
             $_message->setLevel( $level );
@@ -156,14 +155,7 @@ class AuditingService implements LoggerAwareInterface
                     $_request->headers->get( 'x-application-name' )
                 )
             ),
-            'dfe'               => [
-                'instance_id'       => null,
-                'instance_owner_id' => null,
-                'cluster_id'        => $_request->server->get( 'DFE_CLUSTER_ID' ),
-                'app_server_id'     => $_request->server->get( 'DFE_APP_SERVER_ID' ),
-                'db_server_id'      => $_request->server->get( 'DFE_DB_SERVER_ID' ),
-                'web_server_id'     => $_request->server->get( 'DFE_WEB_SERVER_ID' ),
-            ],
+            'dfe'               => [],
             'host'              => $_request->getHost(),
             'method'            => $_request->getMethod(),
             'path_info'         => $_request->getPathInfo(),
