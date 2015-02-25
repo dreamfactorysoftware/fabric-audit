@@ -15,36 +15,9 @@
 			"email": "jerryablan@dreamfactory.com"
 		}
 	],
-	"repositories":      [
-		{
-			"type": "vcs",
-			"url":  "git@github.com:dreamfactorysoftware/dfe-common.git"
-		},
-		{
-			"type": "vcs",
-			"url":  "git@github.com:dreamfactorysoftware/dfe-services.git"
-		},
-		{
-			"type": "vcs",
-			"url":  "git@github.com:dreamfactorysoftware/fabric-common.git"
-		},
-		{
-			"type": "vcs",
-			"url":  "git@github.com:dreamfactorysoftware/fabric-db.git"
-		},
-		{
-			"type": "vcs",
-			"url":  "git@github.com:dreamfactorysoftware/fabric-queue-models.git"
-		},
-		{
-			"type": "vcs",
-			"url":  "git@github.com:dreamfactorysoftware/fabric-couchdb.git"
-		}
-	],
 	"minimum-stability": "dev",
 	"require":           {
-		"dreamfactory/php-utils":  "~1.0",
-		"dreamfactory/dfe-common": "dev-develop as dev-master"
+		"dreamfactory/php-utils": "~1.0"
 	},
 	"require-dev":       {
 		"psr/log":           "~1.0",
