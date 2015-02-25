@@ -65,47 +65,61 @@ class AuditingService implements LoggerAwareInterface
     /**
      * Logs API requests to logging system
      *
-     * @param string  $instanceId The id of the sending instance
-     * @param Request $request    The request
-     * @param int     $level      The level, defaults to INFO
-     * @param string  $facility   The facility, used for sorting
+     * @param string  $instanceId  The id of the sending instance
+     * @param Request $request     The request
+     * @param array   $sessionData Any session data to log
+     * @param int     $level       The level, defaults to INFO
+     * @param string  $facility    The facility, used for sorting
      *
      * @return bool
      */
-    public static function logRequest( $instanceId, Request $request, $level = AuditLevels::INFO, $facility = self::DEFAULT_FACILITY )
+    public static function logRequest( $instanceId, Request $request, $sessionData = [], $level = AuditLevels::INFO, $facility = self::DEFAULT_FACILITY )
     {
         try
         {
-            $_host = $request->getHost();
-
-            $_data = array(
-                'request_timestamp' => (double)$request->server->get( 'REQUEST_TIME_FLOAT' ),
-                'user_agent'        => $request->headers->get( 'user-agent' ),
-                'source_ip'         => $request->getClientIps(),
-                'content_type'      => $request->getContentType(),
-                'content_length'    => (int)$request->headers->get( 'Content-Length' ) ?: 0,
-                'instance_id'       => $instanceId,
-                'session'           => $_SESSION,
-                'token'             => $request->headers->get( 'x-dreamfactory-session-token' ),
-                'facility'          => $facility,
-                'app_name'          => IfSet::get(
-                    $_GET,
-                    'app_name',
-                    $request->headers->get(
-                        'x-dreamfactory-application-name',
-                        $request->headers->get( 'x-application-name' )
-                    )
-                ),
-                'host'              => $_host,
-                'method'            => $request->getMethod(),
-                'path_info'         => $request->getPathInfo(),
-                'path_translated'   => $request->server->get( 'PATH_TRANSLATED' ),
-                'query'             => $request->query->all(),
+            //  Add in stuff for API request logging
+            static::log(
+                [
+                    'facility' => $facility,
+                    'dfe'      => [
+                        'instance_id'       => $instanceId,
+                        'instance_owner_id' => null,
+                        'cluster_id'        => $request->server->get( 'DFE_CLUSTER_ID' ),
+                        'app_server_id'     => $request->server->get( 'DFE_APP_SERVER_ID' ),
+                        'db_server_id'      => $request->server->get( 'DFE_DB_SERVER_ID' ),
+                        'web_server_id'     => $request->server->get( 'DFE_WEB_SERVER_ID' ),
+                    ],
+                    'user'     => $sessionData
+                ],
+                $level,
+                $request
             );
+        }
+        catch ( \Exception $_ex )
+        {
+            //  Completely ignore any issues
+        }
+    }
+
+    /**
+     * Logs API requests to logging system
+     *
+     * @param array   $data    The data to log
+     * @param int     $level   The level, defaults to INFO
+     * @param Request $request The request, if available
+     *
+     * @return bool
+     */
+    public static function log( $data = [], $level = AuditLevels::INFO, $request = null )
+    {
+        try
+        {
+            $_request = $request ?: ( app( 'request' ) ?: Request::createFromGlobals() );
+            $_data = array_merge( static::_buildBasicEntry( $data, $_request ), $data );
 
             $_message = new GelfMessage( $_data );
             $_message->setLevel( $level );
-            $_message->setShortMessage( $request->getMethod() . ' ' . $request->getRequestUri() );
+            $_message->setShortMessage( $_request->getMethod() . ' ' . $_request->getRequestUri() );
             $_message->setFullMessage( 'DFE Audit | ' . implode( ', ', $_data['source_ip'] ) . ' | ' . $_data['request_timestamp'] );
 
             static::getLogger()->send( $_message );
@@ -114,6 +128,40 @@ class AuditingService implements LoggerAwareInterface
         {
             //  Completely ignore any issues
         }
+    }
+
+    /**
+     * @param array   $data
+     * @param Request $request
+     *
+     * @return array
+     */
+    protected static function _buildBasicEntry( $data = [], $request = null )
+    {
+        $_request = $request ?: Request::createFromGlobals();
+
+        return [
+            'request_timestamp' => (double)$_request->server->get( 'REQUEST_TIME_FLOAT' ),
+            'user_agent'        => $_request->headers->get( 'user-agent' ),
+            'source_ip'         => $_request->getClientIps(),
+            'content_type'      => $_request->getContentType(),
+            'content_length'    => (int)$_request->headers->get( 'Content-Length' ) ?: 0,
+            'token'             => $_request->headers->get( 'x-dreamfactory-session-token' ),
+            'app_name'          => IfSet::get(
+                $_GET,
+                'app_name',
+                $_request->headers->get(
+                    'x-dreamfactory-application-name',
+                    $_request->headers->get( 'x-application-name' )
+                )
+            ),
+            'dfe'               => [],
+            'host'              => $_request->getHost(),
+            'method'            => $_request->getMethod(),
+            'path_info'         => $_request->getPathInfo(),
+            'path_translated'   => $_request->server->get( 'PATH_TRANSLATED' ),
+            'query'             => $_request->query->all(),
+        ];
     }
 
     /**
