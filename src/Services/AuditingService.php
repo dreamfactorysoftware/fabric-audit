@@ -73,24 +73,27 @@ class AuditingService implements LoggerAwareInterface
      *
      * @return bool
      */
-    public static function logRequest( $instanceId, Request $request, $sessionData = [], $level = AuditLevels::INFO, $facility = self::DEFAULT_FACILITY )
+    public static function logRequest( $instanceId, Request $request, $sessionData = array(), $level = AuditLevels::INFO, $facility = self::DEFAULT_FACILITY )
     {
         try
         {
+            $_metadata = IfSet::get( $sessionData, 'metadata' );
+            unset( $sessionData['metadata'] );
+
             //  Add in stuff for API request logging
             static::log(
-                [
+                array(
                     'facility' => $facility,
-                    'dfe'      => [
+                    'dfe'      => array(
                         'instance_id'       => $instanceId,
-                        'instance_owner_id' => null,
-                        'cluster_id'        => $request->server->get( 'DFE_CLUSTER_ID' ),
-                        'app_server_id'     => $request->server->get( 'DFE_APP_SERVER_ID' ),
-                        'db_server_id'      => $request->server->get( 'DFE_DB_SERVER_ID' ),
-                        'web_server_id'     => $request->server->get( 'DFE_WEB_SERVER_ID' ),
-                    ],
+                        'instance_owner_id' => IfSet::get( $_metadata, 'owner-email-address' ),
+                        'cluster_id'        => IfSet::get( $_metadata, 'cluster-id', $request->server->get( 'DFE_CLUSTER_ID' ) ),
+                        'app_server_id'     => IfSet::get( $_metadata, 'app-server-id', $request->server->get( 'DFE_APP_SERVER_ID' ) ),
+                        'db_server_id'      => IfSet::get( $_metadata, 'db-server-id', $request->server->get( 'DFE_DB_SERVER_ID' ) ),
+                        'web_server_id'     => IfSet::get( $_metadata, 'web-server-id', $request->server->get( 'DFE_WEB_SERVER_ID' ) ),
+                    ),
                     'user'     => $sessionData
-                ],
+                ),
                 $level,
                 $request
             );
@@ -110,12 +113,12 @@ class AuditingService implements LoggerAwareInterface
      *
      * @return bool
      */
-    public static function log( $data = [], $level = AuditLevels::INFO, $request = null )
+    public static function log( $data = array(), $level = AuditLevels::INFO, $request = null )
     {
         try
         {
             $_request = $request ?: ( app( 'request' ) ?: Request::createFromGlobals() );
-            $_data = array_merge( static::_buildBasicEntry( $data, $_request ), $data );
+            $_data = array_merge( static::_buildBasicEntry( $_request ), $data );
 
             $_message = new GelfMessage( $_data );
             $_message->setLevel( $level );
@@ -136,11 +139,11 @@ class AuditingService implements LoggerAwareInterface
      *
      * @return array
      */
-    protected static function _buildBasicEntry( $data = [], $request = null )
+    protected static function _buildBasicEntry( $request = null )
     {
         $_request = $request ?: Request::createFromGlobals();
 
-        return [
+        return array(
             'request_timestamp' => (double)$_request->server->get( 'REQUEST_TIME_FLOAT' ),
             'user_agent'        => $_request->headers->get( 'user-agent' ),
             'source_ip'         => $_request->getClientIps(),
@@ -155,13 +158,13 @@ class AuditingService implements LoggerAwareInterface
                     $_request->headers->get( 'x-application-name' )
                 )
             ),
-            'dfe'               => [],
+            'dfe'               => array(),
             'host'              => $_request->getHost(),
             'method'            => $_request->getMethod(),
             'path_info'         => $_request->getPathInfo(),
             'path_translated'   => $_request->server->get( 'PATH_TRANSLATED' ),
             'query'             => $_request->query->all(),
-        ];
+        );
     }
 
     /**
