@@ -117,7 +117,7 @@ class AuditingService implements LoggerAwareInterface
     {
         try
         {
-            $_request = $request ?: ( app( 'request' ) ?: Request::createFromGlobals() );
+            $_request = $request ?: static::_getRequest();
             $_data = array_merge( static::_buildBasicEntry( $_request ), $data );
 
             $_message = new GelfMessage( $_data );
@@ -141,7 +141,7 @@ class AuditingService implements LoggerAwareInterface
      */
     protected static function _buildBasicEntry( $request = null )
     {
-        $_request = $request ?: Request::createFromGlobals();
+        $_request = $request ?: static::_getRequest();
 
         return array(
             'request_timestamp' => (double)$_request->server->get( 'REQUEST_TIME_FLOAT' ),
@@ -189,4 +189,13 @@ class AuditingService implements LoggerAwareInterface
         return $this;
     }
 
+    /**
+     * @return mixed|\Symfony\Component\HttpFoundation\Request
+     */
+    protected static function _getRequest()
+    {
+        static $_request;
+
+        return $_request ?: $_request = function_exists( 'app' ) ? app( 'request' ) : Request::createFromGlobals();
+    }
 }
