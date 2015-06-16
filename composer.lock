@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/dreamfactorysoftware/php-utils.git",
-                "reference": "7f7eff0ff110a6e6985ceb85f62466db4df33702"
+                "reference": "eed3878a697fe4f83f828db5bea21c68b368c906"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dreamfactorysoftware/php-utils/zipball/7f7eff0ff110a6e6985ceb85f62466db4df33702",
-                "reference": "7f7eff0ff110a6e6985ceb85f62466db4df33702",
+                "url": "https://api.github.com/repos/dreamfactorysoftware/php-utils/zipball/eed3878a697fe4f83f828db5bea21c68b368c906",
+                "reference": "eed3878a697fe4f83f828db5bea21c68b368c906",
                 "shasum": ""
             },
             "require": {
@@ -55,7 +55,7 @@
                 "dreamfactory",
                 "utility"
             ],
-            "time": "2015-05-28 21:31:46"
+            "time": "2015-06-15 20:34:30"
         },
         {
             "name": "symfony/dependency-injection",
@@ -484,16 +484,16 @@
         },
         {
             "name": "jakub-onderka/php-console-highlighter",
-            "version": "v0.3.1",
+            "version": "v0.3.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/JakubOnderka/PHP-Console-Highlighter.git",
-                "reference": "05bce997da20acf873e6bf396276798f3cd2c76a"
+                "reference": "7daa75df45242c8d5b75a22c00a201e7954e4fb5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/JakubOnderka/PHP-Console-Highlighter/zipball/05bce997da20acf873e6bf396276798f3cd2c76a",
-                "reference": "05bce997da20acf873e6bf396276798f3cd2c76a",
+                "url": "https://api.github.com/repos/JakubOnderka/PHP-Console-Highlighter/zipball/7daa75df45242c8d5b75a22c00a201e7954e4fb5",
+                "reference": "7daa75df45242c8d5b75a22c00a201e7954e4fb5",
                 "shasum": ""
             },
             "require": {
@@ -503,6 +503,7 @@
             "require-dev": {
                 "jakub-onderka/php-code-style": "~1.0",
                 "jakub-onderka/php-parallel-lint": "~0.5",
+                "jakub-onderka/php-var-dump-check": "~0.1",
                 "phpunit/phpunit": "~4.0",
                 "squizlabs/php_codesniffer": "~1.5"
             },
@@ -523,7 +524,7 @@
                     "homepage": "http://www.acci.cz/"
                 }
             ],
-            "time": "2014-07-14 20:59:35"
+            "time": "2015-04-20 18:58:01"
         },
         {
             "name": "jeremeamia/SuperClosure",
@@ -589,12 +590,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "6c566cd7968c7a3727a44d37e5be044d6b0960ac"
+                "reference": "649c5f961e8e7b800226a7c84d46b29f080f4516"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/6c566cd7968c7a3727a44d37e5be044d6b0960ac",
-                "reference": "6c566cd7968c7a3727a44d37e5be044d6b0960ac",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/649c5f961e8e7b800226a7c84d46b29f080f4516",
+                "reference": "649c5f961e8e7b800226a7c84d46b29f080f4516",
                 "shasum": ""
             },
             "require": {
@@ -709,7 +710,7 @@
                 "framework",
                 "laravel"
             ],
-            "time": "2015-06-13 23:04:07"
+            "time": "2015-06-16 14:38:05"
         },
         {
             "name": "league/flysystem",
@@ -2133,12 +2134,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Console.git",
-                "reference": "564398bc1f33faf92fc2ec86859983d30eb81806"
+                "reference": "5a2d05ebb2e2f5aa4fc4e076857e1f9d3322a3e1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Console/zipball/564398bc1f33faf92fc2ec86859983d30eb81806",
-                "reference": "564398bc1f33faf92fc2ec86859983d30eb81806",
+                "url": "https://api.github.com/repos/symfony/Console/zipball/5a2d05ebb2e2f5aa4fc4e076857e1f9d3322a3e1",
+                "reference": "5a2d05ebb2e2f5aa4fc4e076857e1f9d3322a3e1",
                 "shasum": ""
             },
             "require": {
@@ -2182,7 +2183,7 @@
             ],
             "description": "Symfony Console Component",
             "homepage": "https://symfony.com",
-            "time": "2015-06-10 15:30:22"
+            "time": "2015-06-16 15:28:22"
         },
         {
             "name": "symfony/css-selector",
@@ -2512,12 +2513,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/HttpKernel.git",
-                "reference": "1a8bdd721fa2827927e4c4664945f846fd62e11a"
+                "reference": "69d027d00d6980ad3cb2023b254d73465b09484b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/HttpKernel/zipball/1a8bdd721fa2827927e4c4664945f846fd62e11a",
-                "reference": "1a8bdd721fa2827927e4c4664945f846fd62e11a",
+                "url": "https://api.github.com/repos/symfony/HttpKernel/zipball/69d027d00d6980ad3cb2023b254d73465b09484b",
+                "reference": "69d027d00d6980ad3cb2023b254d73465b09484b",
                 "shasum": ""
             },
             "require": {
@@ -2584,7 +2585,7 @@
             ],
             "description": "Symfony HttpKernel Component",
             "homepage": "https://symfony.com",
-            "time": "2015-06-11 22:37:12"
+            "time": "2015-06-16 13:26:24"
         },
         {
             "name": "symfony/process",
