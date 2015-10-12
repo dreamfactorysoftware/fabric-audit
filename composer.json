@@ -21,7 +21,7 @@
 	},
 	"require-dev":       {
 		"psr/log":           "~1.0",
-		"laravel/framework": "5.0.*",
+		"laravel/framework": "5.1.*",
 		"phpunit/phpunit":   "@stable"
 	},
 	"autoload":          {"psr-4": {"DreamFactory\\Library\\Fabric\\Auditing\\": "src/"}},
